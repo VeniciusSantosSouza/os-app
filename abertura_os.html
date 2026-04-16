@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Abertura de OS</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      padding: 14px;
+      background: #eef3f9;
+      color: #1e293b;
+    }
+
+    h3 {
+      margin: 0 0 12px;
+      font-size: 1.2rem;
+    }
+
+    #form,
+    .resultado {
+      background: #fff;
+      border: 1px solid #d8e1ec;
+      border-radius: 12px;
+      padding: 14px;
+      box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+    }
+
+    #form {
+      margin-bottom: 12px;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 4px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #475569;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 11px 12px;
+      margin: 6px 0;
+      border: 1px solid #cfd8e4;
+      border-radius: 10px;
+      font-size: 16px;
+      outline: none;
+      transition: border-color .2s ease, box-shadow .2s ease;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    textarea {
+      min-height: 72px;
+      resize: vertical;
+    }
+
+    input:focus,
+    textarea:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .resultado {
+      background: #f8fbff;
+      border-left: 4px solid #3b82f6;
+    }
+
+    .resultado p {
+      margin: 0 0 10px;
+      display: flex;
+      gap: 6px;
+      align-items: baseline;
+    }
+
+    .resultado p:last-child {
+      margin-bottom: 0;
+    }
+
+    button {
+      padding: 12px 16px;
+      width: 100%;
+      margin-top: 12px;
+      border: none;
+      border-radius: 10px;
+      background: #16a34a;
+      color: #fff;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #15803d;
+    }
+
+    @media (min-width: 900px) {
+      body {
+        max-width: 760px;
+        margin: 0 auto;
+        padding: 26px 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <h3>Abertura de OS</h3>
+
+  <form id="form" onsubmit="return false;">
+
+    <input id="id_matricula" inputmode="numeric" pattern="[0-9]*" placeholder="Matrícula">
+    <input id="id_frota" inputmode="numeric" pattern="[0-9]*" placeholder="Frota">
+
+    <input id="id_data_abertura" placeholder="Data e hora (dd/mm/aaaa hh:mm)">
+
+    <textarea id="id_motivo" placeholder="Motivo"></textarea>
+
+    <input id="id_km" inputmode="numeric" pattern="[0-9]*" placeholder="KM">
+    <input id="id_local" placeholder="Local">
+
+    <input id="id_acoplado_1" placeholder="Acoplado 1">
+    <input id="id_acoplado_2" placeholder="Acoplado 2">
+
+  </form>
+
+  <div class="resultado">
+    <p>🆔 <span id="p_matricula">-</span></p>
+    <p>🚚 <span id="p_frota">-</span></p>
+    <p>⏰ <span id="p_data">-</span></p>
+    <p>📝 <span id="p_motivo">-</span></p>
+    <p>🛣️ <span id="p_km">-</span></p>
+    <p>📍 <span id="p_local">-</span></p>
+    <p id="p_acoplado_linha">🔗 <span id="p_acoplado"></span></p>
+  </div>
+
+  <button type="button" onclick="copiar()">Copiar</button>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    function val(id) {
+      return $(id)?.value?.trim() || "";
+    }
+
+    function getData() {
+      return {
+        matricula: val("id_matricula"),
+        frota: val("id_frota"),
+        data: val("id_data_abertura"),
+        motivo: val("id_motivo"),
+        km: val("id_km"),
+        local: val("id_local"),
+        acoplados: [
+          val("id_acoplado_1"),
+          val("id_acoplado_2")
+        ].filter(Boolean)
+      };
+    }
+
+    function render() {
+      const d = getData();
+
+      $("p_matricula").textContent = d.matricula || "-";
+      $("p_frota").textContent = d.frota || "-";
+      $("p_data").textContent = d.data || "-";
+      $("p_motivo").textContent = d.motivo || "-";
+      $("p_km").textContent = d.km || "-";
+      $("p_local").textContent = d.local || "-";
+
+      const ac = d.acoplados.join(" / ");
+      const linha = $("p_acoplado_linha");
+      const span = $("p_acoplado");
+
+      if (ac.length > 0) {
+        span.textContent = ac;
+        linha.style.display = "block";
+      } else {
+        span.textContent = "";
+        linha.style.display = "none";
+      }
+    }
+
+    function buildMessage() {
+      const d = getData();
+
+      return `
+📃 ABERTURA DE OS
+
+🆔 MATRÍCULA: ${d.matricula || "-"}
+
+🚚 FROTA: ${d.frota || "-"}
+
+⏰ HORÁRIO: ${d.data || "-"}
+
+📝 MOTIVO: ${d.motivo || "-"}
+
+🛣️ KM: ${d.km || "-"}
+
+📍 LOCAL: ${d.local || "-"}
+`.trim();
+    }
+
+    async function copyToClipboard(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        alert("Copiado!");
+      } catch (e) {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        alert("Copiado!");
+      }
+    }
+
+    function copiar() {
+      requestAnimationFrame(() => {
+        copyToClipboard(buildMessage());
+      });
+    }
+
+    function bindInputs() {
+      document.querySelectorAll("input, textarea")
+        .forEach(el => el.addEventListener("input", render));
+    }
+
+    window.addEventListener("load", () => {
+      bindInputs();
+      render();
+    });
+  </script>
+
+</body>
+
+</html>
