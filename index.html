@@ -151,6 +151,45 @@
       box-shadow: 0 0 0 4px rgba(71, 85, 105, 0.25);
     }
 
+    .whatsapp-fab {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      width: 56px;
+      height: 56px;
+      border: none;
+      border-radius: 999px;
+      background: #25d366;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(37, 211, 102, 0.38);
+      z-index: 999;
+      transition: transform .15s ease, filter .2s ease, box-shadow .2s ease;
+    }
+
+    .whatsapp-fab:hover {
+      filter: brightness(1.05);
+      transform: translateY(-2px);
+    }
+
+    .whatsapp-fab:active {
+      transform: translateY(0);
+    }
+
+    .whatsapp-fab:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(37, 211, 102, 0.28);
+    }
+
+    .whatsapp-fab svg {
+      width: 28px;
+      height: 28px;
+      fill: currentColor;
+    }
+
     @media (min-width: 900px) {
       body {
         max-width: 780px;
@@ -206,6 +245,12 @@
     <button type="button" onclick="copiar()">Copiar</button>
     <button type="button" class="btn-limpar" onclick="limpar()">Limpar</button>
   </div>
+
+  <button type="button" class="whatsapp-fab" aria-label="Abrir WhatsApp" onclick="openWhatsApp()">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M20.52 3.48A11.86 11.86 0 0 0 12.06 0C5.52 0 .2 5.31.2 11.85c0 2.08.54 4.12 1.57 5.92L0 24l6.41-1.68a11.88 11.88 0 0 0 5.65 1.44h.01c6.54 0 11.86-5.31 11.86-11.85 0-3.17-1.24-6.15-3.41-8.43Zm-8.46 18.28h-.01a9.86 9.86 0 0 1-5.01-1.37l-.36-.21-3.8 1 1.02-3.71-.24-.38a9.84 9.84 0 0 1-1.5-5.24C2.17 6.4 6.61 1.96 12.06 1.96c2.63 0 5.1 1.03 6.95 2.89a9.78 9.78 0 0 1 2.88 6.96c0 5.44-4.43 9.95-9.83 9.95Zm5.4-7.44c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.95 1.17-.17.2-.35.22-.64.07-.3-.15-1.26-.47-2.4-1.5-.89-.8-1.49-1.79-1.66-2.09-.17-.3-.02-.46.13-.61.14-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.08-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.5h-.57c-.2 0-.52.08-.8.37-.27.3-1.05 1.02-1.05 2.5s1.08 2.9 1.23 3.1c.15.2 2.12 3.24 5.15 4.54.72.31 1.28.49 1.72.62.72.23 1.37.2 1.88.12.57-.08 1.76-.72 2.01-1.42.25-.69.25-1.29.17-1.42-.07-.12-.27-.2-.57-.35Z" />
+    </svg>
+  </button>
 
   <script>
     const $ = (id) => document.getElementById(id);
@@ -302,6 +347,10 @@
       requestAnimationFrame(() => {
         copyToClipboard(buildMessage());
       });
+    }
+
+    function openWhatsApp() {
+      window.location.href = "https://wa.me/";
     }
 
     function limpar() {
