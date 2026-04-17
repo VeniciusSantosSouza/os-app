@@ -309,6 +309,10 @@
 
     function buildMessage() {
       const d = getData();
+      const acopladoTexto = d.acoplados.join(" / ");
+      const blocoAcoplado = acopladoTexto
+        ? `\n🔗 ACOPLADO: ${acopladoTexto}`
+        : "";
 
       return `
 📃 ABERTURA DE OS
@@ -324,6 +328,7 @@
 🛣️ KM: ${d.km || "-"}
 
 📍 LOCAL: ${d.local || "-"}
+${blocoAcoplado}
 `.trim();
     }
 
