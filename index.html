@@ -51,7 +51,8 @@
     }
 
     input,
-    textarea {
+    textarea,
+    select {
       width: 100%;
       padding: 12px 13px;
       margin: 0;
@@ -63,8 +64,6 @@
       background: #f8fbff;
       outline: none;
       transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
-      -webkit-appearance: none;
-      appearance: none;
     }
 
     input::placeholder,
@@ -78,7 +77,8 @@
     }
 
     input:focus,
-    textarea:focus {
+    textarea:focus,
+    select:focus {
       border-color: #2563eb;
       box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.16);
       background: #fff;
@@ -190,6 +190,29 @@
       fill: currentColor;
     }
 
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 88px;
+      transform: translateX(-50%) translateY(10px);
+      background: rgba(15, 23, 42, 0.96);
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .25s ease, transform .25s ease;
+      z-index: 1000;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.25);
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
     @media (min-width: 900px) {
       body {
         max-width: 780px;
@@ -221,7 +244,13 @@
     <input id="id_km" type="text" inputmode="decimal" pattern="[0-9]*[.,]?[0-9]*" placeholder="Ex: 245678.5">
 
     <label for="id_local">Local</label>
-    <input id="id_local" placeholder="Ex: BR-101, Km 210">
+    <select id="id_local">
+      <option value="" disabled selected hidden>Selecione o local</option>
+      <option value="Oficina Aralco">Oficina Aralco</option>
+      <option value="Oficina Alcoazul">Oficina Alcoazul</option>
+      <option value="Oficina Figueira">Oficina Figueira</option>
+      <option value="Oficina General">Oficina General</option>
+    </select>
 
     <label for="id_acoplado_1">Acoplado 1</label>
     <input id="id_acoplado_1" placeholder="Ex: ABC1D23">
@@ -251,12 +280,22 @@
       <path d="M20.52 3.48A11.86 11.86 0 0 0 12.06 0C5.52 0 .2 5.31.2 11.85c0 2.08.54 4.12 1.57 5.92L0 24l6.41-1.68a11.88 11.88 0 0 0 5.65 1.44h.01c6.54 0 11.86-5.31 11.86-11.85 0-3.17-1.24-6.15-3.41-8.43Zm-8.46 18.28h-.01a9.86 9.86 0 0 1-5.01-1.37l-.36-.21-3.8 1 1.02-3.71-.24-.38a9.84 9.84 0 0 1-1.5-5.24C2.17 6.4 6.61 1.96 12.06 1.96c2.63 0 5.1 1.03 6.95 2.89a9.78 9.78 0 0 1 2.88 6.96c0 5.44-4.43 9.95-9.83 9.95Zm5.4-7.44c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.95 1.17-.17.2-.35.22-.64.07-.3-.15-1.26-.47-2.4-1.5-.89-.8-1.49-1.79-1.66-2.09-.17-.3-.02-.46.13-.61.14-.14.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.08-.15-.67-1.61-.92-2.2-.24-.58-.49-.5-.67-.5h-.57c-.2 0-.52.08-.8.37-.27.3-1.05 1.02-1.05 2.5s1.08 2.9 1.23 3.1c.15.2 2.12 3.24 5.15 4.54.72.31 1.28.49 1.72.62.72.23 1.37.2 1.88.12.57-.08 1.76-.72 2.01-1.42.25-.69.25-1.29.17-1.42-.07-.12-.27-.2-.57-.35Z" />
     </svg>
   </button>
+  <div id="toast_copiado" class="toast" aria-live="polite">Copiado com sucesso!</div>
 
   <script>
     const $ = (id) => document.getElementById(id);
+    let toastTimer = null;
 
     function val(id) {
       return $(id)?.value?.trim() || "";
+    }
+
+    function textoSelecionado(id) {
+      const el = $(id);
+      if (!el) return "";
+      if (!el.value?.trim()) return "";
+      const option = el.options?.[el.selectedIndex];
+      return option?.textContent?.trim() || "";
     }
 
     function getData() {
@@ -266,7 +305,7 @@
         data: val("id_data_abertura"),
         motivo: val("id_motivo"),
         km: val("id_km"),
-        local: val("id_local"),
+        local: textoSelecionado("id_local"),
         acoplados: [
           val("id_acoplado_1"),
           val("id_acoplado_2")
@@ -351,7 +390,24 @@ ${blocoAcoplado}
     function copiar() {
       requestAnimationFrame(() => {
         copyToClipboard(buildMessage());
+        mostrarToast("Copiado com sucesso!");
       });
+    }
+
+    function mostrarToast(msg) {
+      const toast = $("toast_copiado");
+      if (!toast) return;
+
+      toast.textContent = msg;
+      toast.classList.add("show");
+
+      if (toastTimer) {
+        clearTimeout(toastTimer);
+      }
+
+      toastTimer = setTimeout(() => {
+        toast.classList.remove("show");
+      }, 1600);
     }
 
     function openWhatsApp() {
@@ -378,8 +434,11 @@ ${blocoAcoplado}
     }
 
     function bindInputs() {
-      document.querySelectorAll("input, textarea")
-        .forEach(el => el.addEventListener("input", render));
+      document.querySelectorAll("input, textarea, select")
+        .forEach((el) => {
+          el.addEventListener("input", render);
+          el.addEventListener("change", render);
+        });
     }
 
     function initDataHoraAtual() {
