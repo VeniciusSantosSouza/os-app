@@ -355,7 +355,17 @@ ${blocoAcoplado}
     }
 
     function openWhatsApp() {
-      window.location.href = "https://api.whatsapp.com/";
+      const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+      const isAndroid = /Android/i.test(navigator.userAgent);
+    
+      if (isIOS) {
+        window.location.href = "https://api.whatsapp.com/";
+      } else if (isAndroid) {
+        window.location.href = "https://wa.me/";
+      } else {
+        // fallback (desktop)
+        window.open("https://web.whatsapp.com/", "_blank");
+      }
     }
 
     function limpar() {
